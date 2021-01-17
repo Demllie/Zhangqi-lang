@@ -6,10 +6,24 @@ namespace zhangqi {
 
 
 	void TreeN::destroy() {
-		if (l != NULL)l->destroy();
-		if (r != NULL)r->destroy();
-		l = r = NULL;
+
+		auto judge = [](Node* _n) {
+			if (_n != NULL) {
+				if (_n->getType() != NodeType::N_Literal)	_n->destroy();
+				else {
+					delete _n;
+				}
+				_n = NULL;
+			}
+		};
+
+		judge(l);
+		judge(r);
+	
 	}
+
+
+
 
 	void AddN::visit() {
 		l->visit();
@@ -49,24 +63,24 @@ namespace zhangqi {
 
 
 	void NumN::visit() {
-		fprintf(g_output, "%lf\n", v);
+		fprintf(g_output, "ld %lf\n", v);
 	}
 
 
-	StrN::StrN(char _s[256]) {
-		
-	}
+	
 	void StrN::visit() {
-		
+		fprintf(g_output, "ld %s\n", s);
+	}
+
+
+	VarN::VarN(char* _s) {
+		name = _s;
+		hash = hash_bkdr(_s);
 	}
 
 	void VarN::visit() {
-
+		fprintf(g_output, "%\n", name);
 	}
 
-	void VarN::destroy() {
-		
-	}
- 
-
+	
 }

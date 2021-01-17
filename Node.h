@@ -7,25 +7,54 @@
 namespace zhangqi {
 
 
+	//节点类型定义
+	typedef enum { //N_在开头
+		N_Node,
+		N_Tree,
+		N_Literal,
+		N_Add,
+		N_Sub,
+		N_Mul,
+		N_Div,
+		N_Pow,
+		N_Mod,
+		N_Rem,
+		N_Num,
+		N_Str,
+		N_Var
+	}NodeType;
+
+
 
 	/*-----------------------------抽象节点----------------------------------*/
 	class Node{ //元节点
 	public:
+		virtual NodeType getType()const { return  NodeType::N_Node; }
+
 		virtual ~Node() {};
 		virtual void visit() = 0;//遍历AST
-		virtual void destroy() = 0;//删除每一个节点
+		virtual void destroy() = 0;//删除每一个节点,但是对于字面量结点来说没有作用
 	};
 	class TreeN : public Node {  //树节点
-	public:
+	protected:
 		Node* l;
 		Node* r;
-		TreeN(Node* _l,Node* _r) : l(_l) , r(_r) {}
-		~TreeN() { destroy(); }
+	public:
+		TreeN(Node* _l, Node* _r) : l(_l), r(_r){}
+		virtual NodeType getType()const { return  NodeType::N_Tree; }
+		virtual ~TreeN() { destroy(); }
 
 		void destroy();
 	};
+	class LiteralN : public Node { //字面量节点
+	public:
+		virtual NodeType getType()const { return  NodeType::N_Literal; }
+		virtual ~LiteralN() {}		
+	};
 
 
+
+	
 
 
 	/*---------------------------------------------------------------------------*/
@@ -38,72 +67,48 @@ namespace zhangqi {
 
 	class AddN : public TreeN {
 	public:
-		AddN(Node* _l, Node* _r) : TreeN(_l, _r) {	}
+		AddN(Node* _l, Node* _r) : TreeN(_l, _r) { }
+		virtual NodeType getType()const { return  NodeType::N_Add; }
 		void visit();
 	};
 	class SubN : public TreeN {
 	public:
-		SubN(Node* _l, Node* _r) : TreeN(_l, _r) {	}
+		SubN(Node* _l, Node* _r) : TreeN(_l, _r) { }
+		virtual NodeType getType()const { return  NodeType::N_Sub; }
 		void visit();
 	};
 	class MulN : public TreeN {
 	public:
-		MulN(Node* _l, Node* _r) : TreeN(_l, _r) {	}
+		MulN(Node* _l, Node* _r) : TreeN(_l, _r) {  }
+		virtual NodeType getType()const { return  NodeType::N_Mul; }
 		void visit();
 	};
 	class DivN : public TreeN {
 	public:
-		DivN(Node* _l, Node* _r) : TreeN(_l, _r) {	}
+		DivN(Node* _l, Node* _r) : TreeN(_l, _r) {  }
+		virtual NodeType getType()const { return  NodeType::N_Div; }
 		void visit();
 	};
 	class PowN : public TreeN {
 	public:
-		PowN(Node* _l, Node* _r) : TreeN(_l, _r) {	}
+		PowN(Node* _l, Node* _r) : TreeN(_l, _r) {}
+		virtual NodeType getType()const { return  NodeType::N_Pow; }
 		void visit();
 	};
 	class ModN : public TreeN {
 	public:
-		ModN(Node* _l, Node* _r) : TreeN(_l, _r) {	}
+		ModN(Node* _l, Node* _r) : TreeN(_l, _r) {}
+		virtual NodeType getType()const { return  NodeType::N_Mod; }
 		void visit();
 	};
 	class RemN : public TreeN {
 	public:
-		RemN(Node* _l, Node* _r) : TreeN(_l, _r) {	}
+		RemN(Node* _l, Node* _r) : TreeN(_l, _r) {}
+		virtual NodeType getType()const { return  NodeType::N_Rem; }
 		void visit();
 	};
 
 
-
-
-	
-
-	//class IfN : public Node {
-	//public:
-	//	IfN();
-	//	~IfN();
-	//	void visit();
-	//	void destroy();
-	//private:
-	//	Node* cond;		//if的条件
-	//	Node* block;    //
-	//};
-	//class ElifN : public Node {
-	//public:
-	//	ElifN();
-	//	~ElifN();
-	//	void visit();
-	//	void destroy();
-	//private:
-	//	Node* cond;		//elif的条件
-	//};
-	//class ElseN : public Node {
-	//public:
-	//	ElifN();
-	//	~ElifN();
-	//	void visit();
-	//	void destroy();
-	//};
-	//
 
 
 	/*---------------------------------------------------------------------------*/
@@ -113,39 +118,41 @@ namespace zhangqi {
 
 
 	//字面量数字
-	class NumN : public Node {
+	class NumN : public LiteralN {
 	private:
 		double v;
 	public:
-		NumN(double _v) :v(_v) {	}
+		NumN(double _v) :v(_v) { }
+		virtual NodeType getType()const { return  NodeType::N_Num; }
 		void visit();
-		void destroy() {
-			//pass
-		}
+		void destroy(){}
 	};
 
 	//字面量字符串
-	class StrN : public Node {
+	class StrN : public LiteralN {
 	private:
-		char s[256];
+		char* s;
 	public:
-		StrN(char _s[256]);
-		void visit();
-		void destroy() {
-			//pass
-		}
+		StrN(char* _s) : s(_s) {  }
+		virtual NodeType getType()const { return  NodeType::N_Str; }
+		void visit();		
+		void destroy() {}
 	};
 
 
 	//变量，属于标识符
+	//！！！暂时全都算作变量好了！！！
 	class VarN : public Node {
 	private:
-		VarType t;  //变量类型
+		VarType t;				//变量类型
+		unsigned int hash;	//变量池中的索引
+		char* name;             //变量名
 	public:
-		VarN() {	}
+		VarN(char* _s);
+		unsigned int getHash()const { return hash; }
+		virtual NodeType getType()const { return  NodeType::N_Var; }
 		void visit();
-		void destroy();
-
+		void destroy() {}
 	};
 
 

@@ -1,16 +1,1 @@
-
-var a = 1.23 + 2 * 3 / ( 1 ^ 2 + 15 % 2) - 12.3446 %%2
---zhushi
-function (): 234 44->
---[asasddasjd
-2
-
-233]let a = 1;
-str1 ="first,123"s
-str2='second,i think of'str3 = '''  the 1
-the 2
-the 3
-the 4 '''let a=1
-
-0
- 
+1.23 + 2 * 3 / ( 1 ^ 2 + 15 % 2) - 12.34467890123456789 %%2

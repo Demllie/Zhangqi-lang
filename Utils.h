@@ -1,7 +1,7 @@
 #pragma once
 #ifndef _UTILS_H_
 #define _UTILS_H_
-#include "core.h"
+#include "Core.h"
 
 
 
@@ -346,14 +346,13 @@ namespace zhangqi{
 
 		//大数，太大的数字也会自动转换为这种形式
 		NUM10_t,							 //DEC"123_2324_2423.3455_23E+23"
-		NUM8_t,							 //OCT"70341"
+		NUM8_t,								 //OCT"70341"
 		NUM16_t,							 //HEX"E_0_8_9_A"
-		NUM2_t,							 //BIN"1100_0101"
+		NUM2_t,							 	 //BIN"1100_0101"
 
 		
 		FUN_t,
 		ARR_t,
-		TUPLE_t,
 		DICT_t,
 		ENUM_t,
 		TYPE_t
